@@ -1,13 +1,21 @@
 //TOOD:
 //WARNING: REMEMBER TO DELETE env. FOR API KEY. DO NOT ADD TO GITHUB
 //1. Create playlist and pull from Spotify for Strella
-//2.a Implement database if need be for her
+//2a. Implement database (MongoDB) also use Axois, in Gitignore, implement env ->
 //2.b Use spotify API to organize into database, connect to database
 //2.c Use database for music selection
-//3. If possible for home server, utilize this on website in docker
+//3. If possible for home server, utilize this on website in docker -> do this for sure
 //4. Implement pictures that cycle through.
-//5. Create new circle objects that go out.
+//5. Create new circle objects that go out. DONE
+//6. POSSIBLE IDEA -> PARAMETRIC HEART
+//7. When running on machine -> HOST ON VM so THAT IP address is only pinned to the VM
 
+//require('dotenv').config();
+
+//console.log(process.env);
+//process for loading API modules and keeping safe in github -> ignoring .env API_KEYS
+
+//BEGIN CODE
 var song;
 var fft;
 var particles = []
