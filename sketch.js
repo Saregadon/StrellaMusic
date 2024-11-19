@@ -1,6 +1,9 @@
 //TOOD:
+//WARNING: REMEMBER TO DELETE env. FOR API KEY. DO NOT ADD TO GITHUB
 //1. Create playlist and pull from Spotify for Strella
-//2. Implement database if need be for her
+//2.a Implement database if need be for her
+//2.b Use spotify API to organize into database, connect to database
+//2.c Use database for music selection
 //3. If possible for home server, utilize this on website in docker
 //4. Implement pictures that cycle through.
 //5. Create new circle objects that go out.
@@ -19,7 +22,8 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   angleMode(DEGREES);
   fft = new p5.FFT();
-
+  //arbitrary setup
+  song.setVolume(0.05);
   //noLoop();
 }
 
