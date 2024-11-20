@@ -11,12 +11,28 @@
 //6. POSSIBLE IDEA -> PARAMETRIC HEART
 //7. When running on machine -> HOST ON VM so THAT IP address is only pinned to the VM
 
-//require('dotenv').config();
+//run using node
+//node --env-file=.env src/sketch.js
 
 //console.log(process.env);
 //process for loading API modules and keeping safe in github -> ignoring .env API_KEYS
 
 //BEGIN CODE
+//making sure it is installed. -> using via WSL 22.04 LTS
+//begin requireing environment for .env and SpotifyWebAPI
+require('dotenv').config();
+const SpotifyWebApi = require('spotify-web-api-node');
+const SpotifyApi = new SpotifyWebApi({
+  clientId: process.env.client_id,
+  clientSecret: process.env.client_secret,
+  redirectUri: 'http://localhost:3000/callback'
+});
+
+SpotifyApi.setAccessToken()
+
+console.log(SpotifyApi);
+console.log(SpotifyWebApi);
+
 var song;
 var fft;
 var particles = []
