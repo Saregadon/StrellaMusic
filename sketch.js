@@ -4,6 +4,7 @@
 //2a. Implement database (MongoDB) also use Axois, in Gitignore, implement env ->
 //2.b Use spotify API to organize into database, connect to database
 //2.c Use database for music selection
+//2.d Use Apache built in VM for linux for web output
 //3. If possible for home server, utilize this on website in docker -> do this for sure
 //4. Implement pictures that cycle through.
 //5. Create new circle objects that go out. DONE
