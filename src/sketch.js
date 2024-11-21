@@ -34,10 +34,10 @@ const SpotifyApi = new SpotifyWebApi({
   redirectUri: 'http://localhost:3000/callback'
 });
 
-const getAccessToken = async() => {
+async function getAccessToken(){
   const clientId = CLIENT_ID;
   const clientSecret = CLIENT_SECRET;
-  const tokenUrl = 'https://accounts.spotify.com/api/token' //most likely will change the api portion
+  const tokenUrl = 'https://accounts.spotify.com/api/token'
 
 const credentials = new URLSearchParams({
   grant_type: 'client_credentials',
@@ -50,26 +50,38 @@ const credentials = new URLSearchParams({
       'Content-Type': 'application/x-www-form-urlencoded',
     }
   });
-  console.log('Access Token:', response.data.access_token);
-};
+  //console.log('Access Token:', response.data.access_token);
+  console.log(response.data.expires_in);
 
-getAccessToken();
+  return response.data.access_token;
+};
 
 SpotifyApi.setAccessToken();
 
-const fetchTrackDetails = async(access_token, trackId) => {
-  const response = await fetch('https://api.spotify.com/v1/tracks/${trackId}', {
-    method: 'GET',
+async function getProfile() {
+  const access_token = await getAccessToken();
+  if (!access_token) {
+    console.error("Error: Access token is missing!");
+    return;
+}
+try{
+  //need user authentication
+  const response = await fetch('https://api.spotify.com/v1/me', {
     headers: {
-      Authorization: 'Bearer ${access_token}',
-    },
-  })
-
+      Authorization: 'Bearer ' + access_token
+      //Authorization: 'Basic' + CLIENT_ID + ":" + CLIENT_SECRET
+    }
+  });
+  
   const data = await response.json();
-  console.log('Track Details:', data);
+  console.log(data);
+
+  }catch (error){
+    console.error('Fetch Error: ', error);
+  }
 };
 
-fetchTrackDetails(getAccessToken(), '3n3Ppam7vgaVa1iaRUc9Lp');
+getProfile();
 
 //console.log(SpotifyApi);
 //console.log(SpotifyWebApi);
