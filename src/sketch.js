@@ -21,17 +21,58 @@
 //making sure it is installed. -> using via WSL 22.04 LTS
 //begin requireing environment for .env and SpotifyWebAPI
 require('dotenv').config();
+
+const axios = require('axios');
 const SpotifyWebApi = require('spotify-web-api-node');
+
+const CLIENT_ID = process.env.client_id;
+const CLIENT_SECRET = process.env.client_secret;
+
 const SpotifyApi = new SpotifyWebApi({
-  clientId: process.env.client_id,
-  clientSecret: process.env.client_secret,
+  clientId: CLIENT_ID,
+  clientSecret: CLIENT_SECRET,
   redirectUri: 'http://localhost:3000/callback'
 });
 
-SpotifyApi.setAccessToken()
+const getAccessToken = async() => {
+  const clientId = CLIENT_ID;
+  const clientSecret = CLIENT_SECRET;
+  const tokenUrl = 'https://accounts.spotify.com/api/token' //most likely will change the api portion
 
-console.log(SpotifyApi);
-console.log(SpotifyWebApi);
+const credentials = new URLSearchParams({
+  grant_type: 'client_credentials',
+  client_id: clientId,
+  client_secret: clientSecret
+})
+
+  const response = await axios.post(tokenUrl, credentials.toString(), {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    }
+  });
+  console.log('Access Token:', response.data.access_token);
+};
+
+getAccessToken();
+
+SpotifyApi.setAccessToken();
+
+const fetchTrackDetails = async(access_token, trackId) => {
+  const response = await fetch('https://api.spotify.com/v1/tracks/${trackId}', {
+    method: 'GET',
+    headers: {
+      Authorization: 'Bearer ${access_token}',
+    },
+  })
+
+  const data = await response.json();
+  console.log('Track Details:', data);
+};
+
+fetchTrackDetails(getAccessToken(), '3n3Ppam7vgaVa1iaRUc9Lp');
+
+//console.log(SpotifyApi);
+//console.log(SpotifyWebApi);
 
 var song;
 var fft;
