@@ -7,10 +7,25 @@
 
     <link rel="stylesheet" type="text/css" href="style.css">
 
-    <script src="libraries/p5.min.js"></script>
-    <script src="libraries/p5.sound.min.js"></script>
+    <!-- Load p5 and p5.sound in the head -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+
+    <!-- Load sketch.js AFTER p5 and p5.sound -->
+    <script src="sketch.js" defer></script>
 </head>
 <body>
-    <script src="src/sketch.js"></script>
+  <button id="loginBtn" onclick="login()">Login with Spotify</button>
+  <script>
+    function login() {
+      window.location.href = '/login';
+    }
+  
+    // Use a different variable name here
+    const pageParams = new URLSearchParams(window.location.search);
+    const token = pageParams.get('access_token');
+    if (token) {
+      document.getElementById('loginBtn').style.display = 'none';
+    }
+  </script>  
 </body>
 </html>
