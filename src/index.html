@@ -17,13 +17,15 @@
   <button id="loginBtn" onclick="login()">Login with Spotify</button>
   <script>
     function login() {
-      window.location.href = '/login';
+      window.location.href = 'https://strellamusic.onrender.com/login'; // Redirect to your external backend
     }
   
-    // Use a different variable name here
+    // Retrieve access token from URL
     const pageParams = new URLSearchParams(window.location.search);
     const token = pageParams.get('access_token');
+  
     if (token) {
+      localStorage.setItem('spotify_access_token', token);
       document.getElementById('loginBtn').style.display = 'none';
     }
   </script>  

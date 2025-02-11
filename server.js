@@ -1,4 +1,5 @@
 require('dotenv').config();
+const cors = require('cors');
 const express = require('express');
 const axios = require('axios');
 const path = require('path');
@@ -7,6 +8,7 @@ const { webcrypto } = require('crypto');
 const { subtle } = webcrypto;
 
 const app = express();
+app.use(cors());
 
 // Spotify API credentials
 const CLIENT_ID = process.env.client_id;
@@ -15,6 +17,28 @@ const SCOPES = 'user-top-read';
 
 // Serve static files from the "src" directory
 app.use(express.static(path.join(__dirname, 'src')));
+
+app.get('/api/top-tracks', async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1]; // Extract Bearer token
+
+  if (!token) {
+    return res.status(401).json({ error: "No access token provided" });
+  }
+
+  try {
+    const response = await axios.get('https://api.spotify.com/v1/me/top/tracks', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    res.json(response.data); // Send Spotify data to frontend
+  } catch (error) {
+    console.error("Error fetching Spotify top tracks:", error.response?.data || error);
+    res.status(500).json({ error: "Failed to fetch top tracks" });
+  }
+});
+
 
 // Helper function to generate a random string
 function generateRandomString(length) {

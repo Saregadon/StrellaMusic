@@ -23,11 +23,28 @@ let fft;
 let particles = [];
 
 // Fetch access token from URL
-const accessToken = "";
-if(typeof window !== 'undefined') {
+// Fetch access token from URL or localStorage
+let accessToken = "";
+
+// Ensure code only runs in the browser
+if (typeof window !== "undefined") {
   const params = new URLSearchParams(window.location.search);
-  accessToken = params.get('access_token');
+  const urlToken = params.get("access_token");
+
+  if (urlToken) {
+    // Store the new access token in localStorage
+    localStorage.setItem("spotify_access_token", urlToken);
+    accessToken = urlToken;
+
+    // Remove access token from the URL to clean it up
+    const newUrl = window.location.origin + window.location.pathname;
+    window.history.replaceState({}, document.title, newUrl);
+  } else {
+    // Retrieve token from localStorage if available
+    accessToken = localStorage.getItem("spotify_access_token") || "";
+  }
 }
+
 
 function preload() {
   if (accessToken) {
@@ -95,11 +112,13 @@ function draw() {
 
 async function fetchTrackData(token) {
   try {
-    const response = await fetch('https://api.spotify.com/v1/me/top/tracks', {
+    const response = await fetch(`https://strellamusic.onrender.com/api/top-tracks`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
     const data = await response.json();
     return data.items[0]?.preview_url || null;
   } catch (error) {
@@ -107,6 +126,7 @@ async function fetchTrackData(token) {
     return null;
   }
 }
+
 
 class Particle {
   constructor() {
