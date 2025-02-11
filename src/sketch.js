@@ -23,9 +23,10 @@ let fft;
 let particles = [];
 
 // Fetch access token from URL
+const accessToken = "";
 if(typeof window !== 'undefined') {
   const params = new URLSearchParams(window.location.search);
-  const accessToken = params.get('access_token');
+  accessToken = params.get('access_token');
 }
 
 function preload() {
