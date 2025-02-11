@@ -27,6 +27,7 @@ function generateRandomString(length) {
   return result;
 }
 
+//Also go into Hostinger and Add VPS for nodeJS backend. don't use render. unnecessary
 //change this -> https://developer.spotify.com/documentation/web-api/tutorials/code-pkce-flow
 // Compute PKCE code verifier and challenge before starting server
 (async () => {
