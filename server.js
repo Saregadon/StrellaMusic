@@ -10,6 +10,7 @@ const { subtle } = webcrypto;
 const app = express();
 app.use(cors());
 
+
 // Spotify API credentials
 const CLIENT_ID = process.env.client_id;
 const REDIRECT_URI = 'http://localhost:5000/callback';
@@ -50,65 +51,68 @@ function generateRandomString(length) {
   return result;
 }
 
-// Compute PKCE code verifier and challenge before starting server
-(async () => {
-  const codeVerifier = generateRandomString(128);
+// Store the codeVerifier in memory
+let codeVerifier = generateRandomString(128);
+
+async function generatePKCE() {
   const buffer = new TextEncoder().encode(codeVerifier);
   const digest = await subtle.digest('SHA-256', buffer);
-  const codeChallenge = btoa(String.fromCharCode(...new Uint8Array(digest)))
+  return btoa(String.fromCharCode(...new Uint8Array(digest)))
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
     .replace(/=+$/, '');
+}
 
+
+// Compute PKCE code verifier and challenge before starting server
+(async () => {
+  const codeChallenge = await generatePKCE();
+  
   const AUTH_URL = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(
     REDIRECT_URI
   )}&scope=${encodeURIComponent(SCOPES)}&code_challenge_method=S256&code_challenge=${codeChallenge}`;
 
-  // Routes
-  app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'src', 'index.html'));
-  });
-
   app.get('/login', (req, res) => {
     res.redirect(AUTH_URL);
   });
+})();
+
 
   app.get('/callback', async (req, res) => {
     const code = req.query.code;
-
+  
     if (!code) {
       return res.status(400).send('No authorization code provided.');
     }
-
+  
     const tokenUrl = 'https://accounts.spotify.com/api/token';
     const payload = {
       grant_type: 'authorization_code',
       code: code,
       redirect_uri: REDIRECT_URI,
       client_id: CLIENT_ID,
-      code_verifier: codeVerifier,
+      code_verifier: codeVerifier, // Use stored codeVerifier
     };
-
+  
     try {
       const response = await axios.post(tokenUrl, qs.stringify(payload), {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       });
-
+  
       const { access_token } = response.data;
       console.log('Access Token:', access_token);
-
-      // Redirect back to the main page (index.html) with the access token
+  
       res.redirect(`/?access_token=${access_token}`);
     } catch (error) {
       console.error('Error fetching access token:', error.response?.data || error);
       res.status(500).send('Error fetching access token.');
     }
   });
+  
 
   const PORT = 5000;
   app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });
-})();
