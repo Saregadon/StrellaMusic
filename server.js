@@ -20,16 +20,30 @@ app.use(express.static(path.join(__dirname, 'src')));
 
 // Helper function to generate a random string, length of 128
 function generateRandomString(length) {
-  let result = '';
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   const values = crypto.getRandomValues(new Uint8Array(length));
-  result = values.reduce((acc, x) => acc + characters[x % characters.length], "");
-  return result;
+  return values.reduce((acc, x) => acc + characters[x % characters.length], "");
 }
 
 //Also go into Hostinger and Add VPS for nodeJS backend. don't use render. unnecessary
 //change this -> https://developer.spotify.com/documentation/web-api/tutorials/code-pkce-flow
 // Compute PKCE code verifier and challenge before starting server
+const sha256 = async (plain) => {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(plain);
+  return window.crypto.subtle.digest('SHA-256', data);
+}
+
+const base64encode = (input) => {
+  return btoa(String.fromCharCode(...new Uint8Array(input)))
+    .replace(/=/g, '')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_');
+}
+
+const hashed = await sha256(codeVerifier);
+const codeChallenge = base64encode(hashed);
+
 (async () => {
   const codeVerifier = generateRandomString(128);
   const buffer = new TextEncoder().encode(codeVerifier);
